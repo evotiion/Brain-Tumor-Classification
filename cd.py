@@ -1,35 +1,34 @@
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
-from tensorflow.keras import datasets, layers, models
+from tensorflow.keras import layers, models
+import tensorflow as tf
 
-(training_images, training_labels), (testing_images, testing_labels) = datasets.cifar10.load_data()
-training_images, testing_images = training_images / 255.0, testing_images / 255.0
 
-class_names = ['Plane', 'Car', 'Bird', 'Cat', 'Deer', 'Dog', 'Frog', 'Horse', 'Ship', 'Truck']
+model = models.load_model("my_smile_model.keras")
 
-for i in range(16):
-    plt.subplot(4, 4, i + 1)
-    plt.xticks([])
-    plt.yticks([])
-    plt.imshow(training_images[i], cmap=plt.cm.binary)
-    plt.xlabel(class_names[training_labels[i][0]])
 
-plt.show()
+class_names = ['non_smile', 'smile']
 
-training_images = training_images[:20000]
-training_labels = training_labels[:20000]
-testing_images = testing_images[:4000]
-testing_labels = testing_labels[:4000]
 
-model = models.load_model("my_model.keras")
-img = cv.imread('./horse.jpg')
+img_path = './smile.jpg'
+img = cv.imread(img_path)
 img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
-img = cv.resize(img, (32, 32))  # Resize the image to match the input shape of the model
+img = cv.resize(img, (32, 32))
 
-plt.imshow(img, cmap=plt.cm.binary)
+img = img / 255.0
 
-prediction = model.predict(np.array([img]) / 255)
-index = np.argmax(prediction)
-print(f'Prediction is {class_names[index]}')
+
+plt.imshow(img)
+plt.xticks([])
+plt.yticks([])
 plt.show()
+
+
+img_array = np.expand_dims(img, axis=0)
+prediction = model.predict(img_array)
+index = np.argmax(prediction)
+print(class_names[index])
+
+
+
